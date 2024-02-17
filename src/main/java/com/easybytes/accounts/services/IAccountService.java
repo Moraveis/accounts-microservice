@@ -4,5 +4,7 @@ import com.easybytes.accounts.dto.CustomerDto;
 
 public interface IAccountService {
 
-    public void createAccount(CustomerDto customerDto);
+    void createAccount(CustomerDto customerDto);
+
+    CustomerDto fetchAccount(String mobileNumber);
 }
