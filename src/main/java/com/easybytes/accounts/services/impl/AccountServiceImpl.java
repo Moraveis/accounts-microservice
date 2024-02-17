@@ -36,9 +36,6 @@ public class AccountServiceImpl implements IAccountService {
             throw new CustomerExistsException("Customer exists for the given mobile number: " + customer.getMobileNumber());
         }
 
-        customer.setCreatedAt(LocalDateTime.now());
-        customer.setCreatedBy("Anonymous");
-
         Customer saved = customerRepository.save(customer);
         accountRepository.save(createNewAccount(saved));
     }
@@ -87,9 +84,6 @@ public class AccountServiceImpl implements IAccountService {
         account.setAccountNumber(generateRandomAccountNumber());
         account.setAccountType(SAVINGS);
         account.setBranchAddress(ADDRESS);
-
-        account.setCreatedAt(LocalDateTime.now());
-        account.setCreatedBy("Anonymous");
 
         return account;
     }
