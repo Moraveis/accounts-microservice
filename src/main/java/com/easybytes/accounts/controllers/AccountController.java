@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,28 +18,38 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/api/accounts/", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class AccountController {
 
     private final IAccountService accountService;
 
-    @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto customerDto) {
         accountService.createAccount(customerDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto(AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201));
     }
 
-    @GetMapping(path = "/fetch")
+    @GetMapping(path = "fetch")
     public ResponseEntity<CustomerDto> fetchAccountDetails(@RequestParam String mobileNumber) {
         CustomerDto customerDto = accountService.fetchAccount(mobileNumber);
         return ResponseEntity.status(HttpStatus.OK).body(customerDto);
     }
 
-    @PutMapping(path = "/update")
+    @PutMapping(path = "update")
     public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody CustomerDto customerDto) {
         boolean updatedAccount = accountService.updateAccount(customerDto);
         if (!updatedAccount) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseDto(AccountsConstants.STATUS_500, AccountsConstants.MESSAGE_500));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
+    }
+
+    @DeleteMapping(path = "delete")
+    public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam String mobileNumber) {
+        boolean accountDeleted = accountService.deleteAccount(mobileNumber);
+        if (!accountDeleted) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseDto(AccountsConstants.STATUS_500, AccountsConstants.MESSAGE_500));
         }
 
