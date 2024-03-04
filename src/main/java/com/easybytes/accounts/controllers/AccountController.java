@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,8 @@ public class AccountController {
 
     private final IAccountService accountService;
 
+    private final Environment environment;
+
     @Value("${build.version}")
     private String buildVersion;
 
@@ -39,6 +42,13 @@ public class AccountController {
     @GetMapping("build-details")
     public ResponseEntity<String> getBuildDetails() {
         return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+    }
+
+    @Operation(summary = "Get java details")
+    @ApiResponse(responseCode = "200", description = "Java Details")
+    @GetMapping("java-details")
+    public ResponseEntity<String> getJavaVersion() {
+        return ResponseEntity.status(HttpStatus.OK).body(System.getProperty("JAVA_HOME"));
     }
 
     @Operation(summary = "Create account and customer")
