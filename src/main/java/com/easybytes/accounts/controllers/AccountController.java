@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,16 @@ import javax.validation.constraints.Pattern;
 public class AccountController {
 
     private final IAccountService accountService;
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    @Operation(summary = "Get build details")
+    @ApiResponse(responseCode = "200", description = "Build Details")
+    @GetMapping("build-details")
+    public ResponseEntity<String> getBuildDetails() {
+        return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+    }
 
     @Operation(summary = "Create account and customer")
     @ApiResponse(responseCode = "201", description = "Account created with success")
