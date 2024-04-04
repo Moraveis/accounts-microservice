@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: "qa"
+
+accounts:
+  message: "Welcome to EasyBank accounts related Qa APIS"
+  contact-details:
+    name: "John Doe - QA lead"
+    email: "john.doe@easybank.com"
+  on-call-support:
+    - (666) 265-3765
+    - (666) 734-8371
+
+build:
+  version: "2.0"

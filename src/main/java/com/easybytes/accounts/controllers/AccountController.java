@@ -1,6 +1,7 @@
 package com.easybytes.accounts.controllers;
 
 import com.easybytes.accounts.constantes.AccountsConstants;
+import com.easybytes.accounts.dto.AccountsContactInfoDto;
 import com.easybytes.accounts.dto.CustomerDto;
 import com.easybytes.accounts.dto.ErrorResponseDto;
 import com.easybytes.accounts.dto.ResponseDto;
@@ -31,8 +32,8 @@ import javax.validation.constraints.Pattern;
 public class AccountController {
 
     private final IAccountService accountService;
-
     private final Environment environment;
+    private final AccountsContactInfoDto accountsContactInfoDto;
 
     @Value("${build.version}")
     private String buildVersion;
@@ -48,7 +49,14 @@ public class AccountController {
     @ApiResponse(responseCode = "200", description = "Java Details")
     @GetMapping("java-details")
     public ResponseEntity<String> getJavaVersion() {
-        return ResponseEntity.status(HttpStatus.OK).body(System.getProperty("JAVA_HOME"));
+        return ResponseEntity.status(HttpStatus.OK).body(environment.getProperty("JAVA_HOME"));
+    }
+
+    @Operation(summary = "Get contact details")
+    @ApiResponse(responseCode = "200", description = "Contact Details")
+    @GetMapping("contact-details")
+    public ResponseEntity<AccountsContactInfoDto> getContactDetails() {
+        return ResponseEntity.status(HttpStatus.OK).body(accountsContactInfoDto);
     }
 
     @Operation(summary = "Create account and customer")
