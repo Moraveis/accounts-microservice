@@ -1,40 +1,98 @@
 services:
+  config-server:
+    image: "joaovitormoraveis/ms-configserver:0.0.1"
+    container_name: "ms-accounts"
+    ports:
+      - "8071:8071"
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - udemycourse
+
   accounts:
     image: "joaovitormoraveis/ms-accounts:0.0.1"
     container_name: "ms-accounts"
     ports:
       - "8080:8080"
+    depends_on:
+      config-server:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 700m
     networks:
       - udemycourse
-  loans:
-    image: "joaovitormoraveis/ms-loan:0.0.1"
-    container_name: "ms-loans"
-    ports:
-      - "8081:8080"
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-    networks:
-      - udemycourse
+    environment:
+      - SPRING_APPLICATION_NAME:"accounts"
+      - SPRING_CONFIG_IMPORT:"configserver:http://config-server:8071"
+      - SPRING_PROFILES_ACTIVE:default
+
   cards:
     image: "joaovitormoraveis/ms-cards:0.0.1"
     container_name: "ms-cards"
     ports:
       - "8082:8080"
+    depends_on:
+      config-server:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           memory: 700m
     networks:
       - udemycourse
+    environment:
+      - SPRING_APPLICATION_NAME:"cards"
+      - SPRING_CONFIG_IMPORT:"configserver:http://config-server:8071"
+      - SPRING_PROFILES_ACTIVE:default
+
+  loans:
+    image: "joaovitormoraveis/ms-loan:0.0.1"
+    container_name: "ms-loans"
+    ports:
+      - "8081:8080"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - udemycourse
+    environment:
+      - SPRING_APPLICATION_NAME:"loans"
+      - SPRING_CONFIG_IMPORT:"configserver:http://config-server:8071"
+      - SPRING_PROFILES_ACTIVE:default
+
+  rabbit:
+    image: rabbitmq:3.13-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    networks:
+      - udemycourse
+
 
 networks:
   udemycourse:
     driver: "bridge"
-
-
